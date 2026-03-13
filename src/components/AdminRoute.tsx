@@ -5,17 +5,19 @@ interface Props {
   children: React.ReactNode;
 }
 
-const ProtectedRoute: React.FC<Props> = ({ children }) => {
-
+const AdminRoute: React.FC<Props> = ({ children }) => {
   const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
 
-  // If no token → redirect to login
   if (!token) {
     return <Navigate to="/" replace />;
   }
 
-  // If token exists → allow page
+  if (role !== "admin") {
+    return <Navigate to="/home" replace />;
+  }
+
   return <>{children}</>;
 };
 
-export default ProtectedRoute;
+export default AdminRoute;

@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "./Assessment.css";
 
@@ -8,48 +8,62 @@ interface Question {
   answer: string;
 }
 
-const finalQuestions: Question[] = [
+const monthlyPktQuestions: Question[] = [
   {
-    question: "What is LG's full form?",
-    options: ["Life's Good", "Lucky Group", "Luxury Global", "Light Grid"],
-    answer: "Life's Good",
-  },
-  {
-    question: "Which training is practical based?",
-    options: ["Soft Skill", "OJT", "Product Theory", "Orientation"],
-    answer: "OJT",
-  },
-  {
-    question: "Minimum passing score?",
-    options: ["50%", "60%", "70%", "80%"],
-    answer: "80%",
-  },
-  {
-    question: "Customer service focuses on?",
-    options: ["Customer satisfaction", "Sales", "Marketing", "Finance"],
-    answer: "Customer satisfaction",
-  },
-  {
-    question: "CIC stands for?",
+    question: "What is the purpose of Monthly PKT?",
     options: [
-      "Customer Interaction Center",
-      "Customer Integration Cell",
-      "Central Information Channel",
-      "Call Information Center",
+      "Improve product knowledge",
+      "Entertainment",
+      "Sales report",
+      "Marketing plan",
     ],
-    answer: "Customer Interaction Center",
+    answer: "Improve product knowledge",
+  },
+  {
+    question: "PKT stands for?",
+    options: [
+      "Product Knowledge Training",
+      "Public Knowledge Training",
+      "Professional Knowledge Test",
+      "Product Key Technology",
+    ],
+    answer: "Product Knowledge Training",
+  },
+  {
+    question: "Monthly PKT helps agents to?",
+    options: [
+      "Handle customer queries better",
+      "Increase salary",
+      "Reduce working hours",
+      "Skip training",
+    ],
+    answer: "Handle customer queries better",
+  },
+  {
+    question: "PKT sessions are conducted?",
+    options: ["Monthly", "Daily", "Weekly", "Yearly"],
+    answer: "Monthly",
+  },
+  {
+    question: "Which team benefits most from PKT?",
+    options: [
+      "Customer support team",
+      "Finance team",
+      "HR team",
+      "Security team",
+    ],
+    answer: "Customer support team",
   },
 ];
 
-function FinalAssessment() {
-  const { dayId } = useParams();
+function MonthlyPkt() {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
   const currentUser = localStorage.getItem("email");
 
   const [answers, setAnswers] = useState<string[]>(
-    Array(finalQuestions.length).fill("")
+    Array(monthlyPktQuestions.length).fill("")
   );
 
   const [score, setScore] = useState<number | null>(null);
@@ -76,16 +90,16 @@ function FinalAssessment() {
         },
         body: JSON.stringify({
           username: currentUser,
-          day: Number(dayId),
-          topic: `FINAL-DAY-${dayId}`,
+          day: 0,
+          topic: "MONTHLY_PKT",
           score: percentage,
           duration_seconds: duration,
         }),
       });
 
-      console.log("✅ Final assessment saved");
+      console.log("Monthly PKT saved");
     } catch (error) {
-      console.error("❌ Save failed:", error);
+      console.error("Save failed:", error);
     }
   };
 
@@ -97,11 +111,13 @@ function FinalAssessment() {
 
     let correct = 0;
 
-    finalQuestions.forEach((q, index) => {
+    monthlyPktQuestions.forEach((q, index) => {
       if (answers[index] === q.answer) correct++;
     });
 
-    const percentage = Math.round((correct / finalQuestions.length) * 100);
+    const percentage = Math.round(
+      (correct / monthlyPktQuestions.length) * 100
+    );
 
     setScore(percentage);
 
@@ -113,28 +129,21 @@ function FinalAssessment() {
       setPassed(true);
 
       localStorage.setItem(
-        `${currentUser}_day${dayId}_final_completed`,
+        `${currentUser}_monthly_pkt_completed`,
         "true"
       );
 
-      const nextDay = Number(dayId) + 1;
-
-      localStorage.setItem(
-        `${currentUser}_day${nextDay}_unlocked`,
-        "true"
-      );
-
-      alert("🎉 Congratulations! You passed the Final Assessment!");
+      alert("Congratulations! You passed Monthly PKT!");
     } else {
-      alert("❌ You need 80% to pass.");
+      alert("You need 80% to pass.");
     }
   };
 
   return (
     <div className="assessment-container">
-      <h1>Final Assessment - Day {dayId}</h1>
+      <h1>Monthly PKT</h1>
 
-      {finalQuestions.map((q, index) => (
+      {monthlyPktQuestions.map((q, index) => (
         <div key={index} className="question-box">
           <h3>
             {index + 1}. {q.question}
@@ -156,7 +165,7 @@ function FinalAssessment() {
 
       {score === null && (
         <button className="submit-btn" onClick={submitAssessment}>
-          Submit Final Assessment
+          Submit
         </button>
       )}
 
@@ -166,18 +175,18 @@ function FinalAssessment() {
 
           {passed ? (
             <>
-              <h3 style={{ color: "green" }}>🎉 Passed</h3>
+              <h3 style={{ color: "green" }}>Passed</h3>
 
               <button
                 className="next-btn"
-                onClick={() => navigate(`/new-hired/${Number(dayId) + 1}`)}
+                onClick={() => navigate("/")}
               >
-                Go to Day {Number(dayId) + 1}
+                Go to Home
               </button>
             </>
           ) : (
             <>
-              <h3 style={{ color: "red" }}>❌ Failed</h3>
+              <h3 style={{ color: "red" }}>Failed</h3>
 
               <button
                 className="retry-btn"
@@ -193,4 +202,4 @@ function FinalAssessment() {
   );
 }
 
-export default FinalAssessment;
+export default MonthlyPkt;

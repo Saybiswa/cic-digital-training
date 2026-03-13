@@ -23,48 +23,56 @@ type TrainingData = Record<
     softSkill: TrainingModule;
     product: TrainingModule;
     ojt: TrainingModule;
+    monthlyPkt: TrainingModule;
   }
 >;
+
 
 function Home() {
   const navigate = useNavigate();
   const [language, setLanguage] = useState<Language>("english");
   const trainingData: TrainingData = {
     english: {
-      newHired: { title: "New Hired Training", video: "/videos/english/new-hired.mp4" },
-      softSkill: { title: "Soft Skill", video: "/videos/english/soft-skill.mp4" },
-      product: { title: "Product Training", video: "/videos/english/product.mp4" },
-      ojt: { title: "On Job Training", video: "/videos/english/ojt.mp4" },
-    },
+  newHired: { title: "New Hired Training", video: "/videos/english/new-hired.mp4" },
+  softSkill: { title: "Soft Skill", video: "/videos/english/soft-skill.mp4" },
+  product: { title: "Product Training", video: "/videos/english/product.mp4" },
+  ojt: { title: "On Job Training", video: "/videos/english/ojt.mp4" },
+  monthlyPkt: { title: "Monthly PKT", video: "/videos/english/monthly-pkt.mp4" }
+},
     hindi: {
-      newHired: { title: "नए कर्मचारी प्रशिक्षण", video: "/videos/hindi/new-hired.mp4" },
+      newHired: { title: "न्यू हायर्ड ट्रेनिंग ", video: "/videos/hindi/new-hired.mp4" },
       softSkill: { title: "सॉफ्ट स्किल", video: "/videos/hindi/soft-skill.mp4" },
-      product: { title: "उत्पाद प्रशिक्षण", video: "/videos/hindi/product.mp4" },
-      ojt: { title: "कार्यस्थल प्रशिक्षण", video: "/videos/hindi/ojt.mp4" },
+      product: { title: "प्रोडक्ट ट्रेनिंग ", video: "/videos/hindi/product.mp4" },
+      ojt: { title: "ऑन जॉब ट्रेनिंग ", video: "/videos/hindi/ojt.mp4" },
+      monthlyPkt: { title: "मासिक PKT", video: "/videos/hindi/monthly-pkt.mp4" }
     },
     bengali: {
-      newHired: { title: "নতুন কর্মী প্রশিক্ষণ", video: "/videos/bengali/new-hired.mp4" },
+      newHired: { title: "নিউ হায়ারড ট্রেনিং ", video: "/videos/bengali/new-hired.mp4" },
       softSkill: { title: "সফট স্কিল", video: "/videos/bengali/soft-skill.mp4" },
-      product: { title: "পণ্য প্রশিক্ষণ", video: "/videos/bengali/product.mp4" },
-      ojt: { title: "কর্মস্থল প্রশিক্ষণ", video: "/videos/bengali/ojt.mp4" },
+      product: { title: "প্রোডাক্ট ট্রেনিং ", video: "/videos/bengali/product.mp4" },
+      ojt: { title: "অন জব ট্রেনিং ", video: "/videos/bengali/ojt.mp4" },
+      monthlyPkt: { title: "मासिक PKT", video: "/videos/hindi/monthly-pkt.mp4" }
     },
     gujarati: {
       newHired: { title: "નવા કર્મચારી તાલીમ", video: "/videos/gujarati/new-hired.mp4" },
       softSkill: { title: "સોફ્ટ સ્કિલ", video: "/videos/gujarati/soft-skill.mp4" },
       product: { title: "ઉત્પાદન તાલીમ", video: "/videos/gujarati/product.mp4" },
       ojt: { title: "કાર્યસ્થળ તાલીમ", video: "/videos/gujarati/ojt.mp4" },
+      monthlyPkt: { title: "मासिक PKT", video: "/videos/hindi/monthly-pkt.mp4" }
     },
     marathi: {
       newHired: { title: "नवीन कर्मचारी प्रशिक्षण", video: "/videos/marathi/new-hired.mp4" },
       softSkill: { title: "सॉफ्ट स्किल", video: "/videos/marathi/soft-skill.mp4" },
       product: { title: "उत्पादन प्रशिक्षण", video: "/videos/marathi/product.mp4" },
       ojt: { title: "कामावर प्रशिक्षण", video: "/videos/marathi/ojt.mp4" },
+      monthlyPkt: { title: "मासिक PKT", video: "/videos/hindi/monthly-pkt.mp4" }
     },
     telugu: {
       newHired: { title: "కొత్త ఉద్యోగి శిక్షణ", video: "/videos/telugu/new-hired.mp4" },
       softSkill: { title: "సాఫ్ట్ స్కిల్", video: "/videos/telugu/soft-skill.mp4" },
       product: { title: "ఉత్పత్తి శిక్షణ", video: "/videos/telugu/product.mp4" },
       ojt: { title: "ఉద్యోగ స్థల శిక్షణ", video: "/videos/telugu/ojt.mp4" },
+      monthlyPkt: { title: "मासिक PKT", video: "/videos/hindi/monthly-pkt.mp4" }
     },
   };
 
@@ -104,7 +112,7 @@ const renderModuleTitle = (key: keyof typeof selectedData) => {
             <div className="welcome-text">
               <h2>Welcome to Digital Training World</h2>
               <p className="text-xl font-semibold mb-2">
-                Hi, I Am Your Virtual Trainer
+                Hi, I Am Your Digital Trainer
               </p>
               <p>I will help you with all the trainings required in CIC.</p>
             </div>
@@ -197,8 +205,27 @@ const renderModuleTitle = (key: keyof typeof selectedData) => {
               <Briefcase size={40} />
               <h3>{renderModuleTitle("ojt")}</h3>
             </button>
+            <button
+  className="training-btn"
+  onClick={() =>
+    navigate("/monthly-pkt", {
+      state: { video: selectedData.monthlyPkt.video },
+    })
+  }
+>
+  <Briefcase size={40} />
+  <h3>{renderModuleTitle("monthlyPkt")}</h3>
+</button>
+            
           </div>
         </section>
+        {/* Floating Assistance Button */}
+<button
+  className="floating-assistance-btn"
+  onClick={() => navigate("/support")}
+>
+  Need Assistance?
+</button>
       </div>
     </>
   );

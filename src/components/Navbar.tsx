@@ -5,14 +5,20 @@ import { useEffect, useState } from "react";
 
 function Navbar() {
   const navigate = useNavigate();
-  const isAuthenticated = localStorage.getItem("isAuthenticated");
-  const username = localStorage.getItem("username");
 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState("");
   const [lastUpdate, setLastUpdate] = useState("");
 
-  // Example: Fetch last update from localStorage or an API
   useEffect(() => {
-    const update = localStorage.getItem("lastUpdate"); // Could also fetch from API
+    const auth = localStorage.getItem("isAuthenticated") === "true";
+    const user = localStorage.getItem("username");
+
+    setIsAuthenticated(auth);
+    setUsername(user || "");
+
+    const update = localStorage.getItem("lastUpdate");
+
     if (update) {
       setLastUpdate(update);
     } else {
@@ -23,8 +29,7 @@ function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("username");
+    localStorage.clear();
     navigate("/");
   };
 
@@ -33,12 +38,13 @@ function Navbar() {
       <div className="navbar-container">
 
         {/* Logo */}
-        <Link to="/" className="navbar-logo">
+        <Link to="/home" className="navbar-logo">
           <img src={lgLogo} alt="LG Logo" className="lg-logo" />
         </Link>
 
         {/* Right Section */}
         <div className="navbar-auth">
+
           {isAuthenticated && (
             <>
               <span className="user-name">
@@ -52,12 +58,11 @@ function Navbar() {
             </>
           )}
 
-          {/* Last Update */}
           <span className="last-update">
             Last Update: {lastUpdate}
           </span>
-        </div>
 
+        </div>
       </div>
     </nav>
   );

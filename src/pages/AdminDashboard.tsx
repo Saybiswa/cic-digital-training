@@ -1,206 +1,126 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./AdminDashboard.css";
 
-interface TopicDetail {
-  topicName: string;
-  startDate: string;
-  endDate: string;
+interface Assessment {
+  id: number;
+  username: string;
+  score: number;
 }
 
-interface UserData {
-  completedTopics: number;
-  completedDays: number;
-  totalScore: number;
-  topics: TopicDetail[];
-}
-
-function AdminDashboard() {
+const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState<[string, UserData][]>([]);
 
-  // ✅ Load data from PostgreSQL
-  useEffect(() => {
-    if (localStorage.getItem("admin_logged_in") !== "true") {
-      navigate("/admin-login");
-      return;
-    }
+  const [assessments, setAssessments] = useState<Assessment[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-    const loadData = async () => {
-      try {
-        const res = await fetch("http://127.0.0.1:5000/api/assessments");
-        const data = await res.json();
-
-        const userMap: Record<string, UserData> = {};
-
-        data.forEach((item: any) => {
-          if (!userMap[item.username]) {
-            userMap[item.username] = {
-              completedTopics: 0,
-              completedDays: 0,
-              totalScore: 0,
-              topics: [],
-            };
-          }
-
-          if (item.completed) userMap[item.username].completedTopics++;
-
-          userMap[item.username].completedDays++;
-          userMap[item.username].totalScore += item.score;
-
-          userMap[item.username].topics.push({
-            topicName: item.topic,
-            startDate: item.created_at || "N/A",
-            endDate: item.completed ? item.created_at : "Not Completed",
-          });
-        });
-
-        setUsers(Object.entries(userMap));
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        alert("Failed to load data");
-      }
-    };
-
-    loadData();
-  }, [navigate]);
-
-  // ✅ Reset all assessment data
-  const handleResetData = async () => {
-    if (!window.confirm("Delete all data?")) return;
-
+  // ✅ Fetch assessments with token
+  const fetchAssessments = async () => {
     try {
-      await fetch("http://127.0.0.1:5000/api/assessments", {
-        method: "DELETE",
-      });
-      setUsers([]);
+      const token = localStorage.getItem("token");
+
+      const response = await axios.get<Assessment[]>(
+        "http://localhost:5000/api/assessments",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setAssessments(response.data);
     } catch (error) {
-      console.error("Error deleting data:", error);
+      console.error("Failed to fetch assessments:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchAssessments();
+  }, []);
 
   // ✅ Logout
   const handleLogout = () => {
-    localStorage.removeItem("admin_logged_in");
-    navigate("/admin-login");
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("email");
+
+    navigate("/");
   };
 
-  // ✅ Download CSV
-  const downloadReport = () => {
-    if (users.length === 0) {
-      alert("No data available to export");
-      return;
-    }
+  // ✅ Stats
+  const totalUsers = new Set(assessments.map((a) => a.username)).size;
 
-    const headers = [
-      "User",
-      "Completed Topics",
-      "Completed Days",
-      "Total Score",
-      "Topics",
-    ];
+  const totalAssessments = assessments.length;
 
-    const rows = users.map(([username, data]) => [
-      username,
-      data.completedTopics,
-      data.completedDays,
-      data.totalScore,
-      data.topics
-        .map(
-          (t) =>
-            `${t.topicName} (${t.startDate} → ${t.endDate})`
-        )
-        .join(" | "),
-    ]);
-
-    const csvContent = [headers, ...rows]
-      .map((row) => row.join(","))
-      .join("\n");
-
-    const blob = new Blob([csvContent], {
-      type: "text/csv;charset=utf-8;",
-    });
-
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-
-    const today = new Date().toISOString().split("T")[0];
-    link.setAttribute("download", `Admin_Report_${today}.csv`);
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  const averageScore =
+    assessments.length > 0
+      ? (
+          assessments.reduce((sum, a) => sum + a.score, 0) /
+          assessments.length
+        ).toFixed(2)
+      : "0";
 
   return (
-    <div className="admin-container">
-      <div className="admin-header">
-        <h2>Admin Dashboard</h2>
-        <div>
-          <button className="reset-btn" onClick={handleResetData}>
-            Reset Data
-          </button>
-          <button className="download-btn" onClick={downloadReport}>
-            Download Report
-          </button>
-          <button className="logout-btn" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
+    <div className="admin-dashboard">
+
+      {/* HEADER */}
+      <div className="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <button onClick={handleLogout}>Logout</button>
       </div>
 
-      <div className="admin-card">
-        <table className="admin-table">
+      {/* STATS */}
+      {loading ? (
+        <p>Loading data...</p>
+      ) : (
+        <div className="stats-container">
+
+          <div className="stat-card">
+            <h3>Total Users</h3>
+            <p>{totalUsers}</p>
+          </div>
+
+          <div className="stat-card">
+            <h3>Total Assessments</h3>
+            <p>{totalAssessments}</p>
+          </div>
+
+          <div className="stat-card">
+            <h3>Average Score</h3>
+            <p>{averageScore}</p>
+          </div>
+
+        </div>
+      )}
+
+      {/* TABLE */}
+      <div className="assessment-table">
+        <h2>Recent Assessments</h2>
+
+        <table>
           <thead>
             <tr>
-              <th>User</th>
-              <th>Completed Topics</th>
-              <th>Completed Days</th>
-              <th>Total Score</th>
-              <th>Topic Details</th>
+              <th>Username</th>
+              <th>Score</th>
             </tr>
           </thead>
+
           <tbody>
-            {users.length === 0 ? (
-              <tr>
-                <td colSpan={5} style={{ textAlign: "center" }}>
-                  No Data Found
-                </td>
+            {assessments.slice(0, 10).map((a) => (
+              <tr key={a.id}>
+                <td>{a.username}</td>
+                <td>{a.score}</td>
               </tr>
-            ) : (
-              users.map(([username, data]) => (
-                <tr key={username}>
-                  <td>{username}</td>
-                  <td>{data.completedTopics}</td>
-                  <td>{data.completedDays}</td>
-                  <td>{data.totalScore}</td>
-                  <td>
-                    {data.topics.map((t, i) => (
-                      <div key={i} className="topic-detail">
-                        <strong>{t.topicName}</strong>
-                        <br />
-                        Start:{" "}
-                        {t.startDate !== "N/A"
-                          ? new Date(t.startDate).toLocaleString()
-                          : "N/A"}
-                        <br />
-                        End:{" "}
-                        {t.endDate !== "Not Completed"
-                          ? new Date(t.endDate).toLocaleString()
-                          : "Not Completed"}
-                        <hr />
-                      </div>
-                    ))}
-                  </td>
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
+
         </table>
       </div>
     </div>
   );
-}
+};
 
 export default AdminDashboard;

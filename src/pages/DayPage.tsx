@@ -46,16 +46,16 @@ const dayTopics: Record<Language, Record<DayId, Topic[]>> = {
 
   hindi: {
     1: [
-      { id: "LG-HISTORY", label: "एलजी-इतिहास" },
-      { id: "DEPARTMENT-OVERVIEW", label: "विभाग-ओवरव्यू" },
+      { id: "LG-HISTORY", label: "एलजी-हिस्ट्री" },
+      { id: "DEPARTMENT-OVERVIEW", label: "डिपार्टमेंट-ओवरव्यू " },
       { id: "CS-INTRO", label: "सीएस-इंट्रो" },
-      { id: "CIC-INTRODUCTION", label: "CIC-परिचय" },
+      { id: "CIC-INTRODUCTION", label: "CIC-इन्ट्रोडक्शन" },
     ],
     2: [
-      { id: "GSFS INTRODUCTION", label: "GSFS परिचय" },
+      { id: "GSFS INTRODUCTION", label: "GSFS इन्ट्रोडक्शन" },
       { id: "FRESH CALL REGISTRATION", label: "फ्रेश कॉल रजिस्ट्रेशन" },
-      { id: "GSFS EXPLANATION CNP", label: "GSFS व्याख्या CNP" },
-      { id: "CALL RE-REGISTRATION", label: "कॉल पुनः पंजीकरण" },
+      { id: "GSFS EXPLANATION CNP", label: "GSFS एक्सप्लनेशन  CNP" },
+      { id: "CALL RE-REGISTRATION", label: "कॉल रे रजिस्ट्रेशन" },
       { id: "ONEWIEW", label: "ONEWIEW" },
       { id: "REMINDER GENERATION", label: "रिमाइंडर जनरेशन" },
       { id: "VOC", label: "VOC" },
@@ -66,22 +66,22 @@ const dayTopics: Record<Language, Record<DayId, Topic[]>> = {
       { id: "WM", label: "WM" },
       { id: "TV", label: "TV" },
       { id: "usages Extensive of Telepresence", label: "टेलीप्रेज़ेंस का व्यापक उपयोग" },
-      { id: "Assistant Through RST", label: "RST के माध्यम से सहायक" },
+      { id: "Assistant Through RST", label: "असिस्टेंस थ्रू RST" },
     ],
   },
 
   bengali: {
     1: [
-      { id: "LG-HISTORY", label: "LG-ইতিহাস" },
-      { id: "DEPARTMENT-OVERVIEW", label: "বিভাগ-ওভারভিউ" },
-      { id: "CS-INTRO", label: "CS-পরিচয়" },
-      { id: "CIC-INTRODUCTION", label: "CIC-পরিচিতি" },
+      { id: "LG-HISTORY", label: "LG- হিস্টোরি" },
+      { id: "DEPARTMENT-OVERVIEW", label: "ডিপার্টমেন্ট-ওভারভিউ " },
+      { id: "CS-INTRO", label: "CS-ইন্ট্রো" },
+      { id: "CIC-INTRODUCTION", label: "CIC-ইট্রোডাকশন" },
     ],
     2: [
-      { id: "GSFS INTRODUCTION", label: "GSFS পরিচিতি" },
+      { id: "GSFS INTRODUCTION", label: "GSFS ইট্রোডাকশন" },
       { id: "FRESH CALL REGISTRATION", label: "ফ্রেশ কল রেজিস্ট্রেশন" },
-      { id: "GSFS EXPLANATION CNP", label: "GSFS ব্যাখ্যা CNP" },
-      { id: "CALL RE-REGISTRATION", label: "কল পুনঃনিবন্ধন" },
+      { id: "GSFS EXPLANATION CNP", label: "GSFS এক্সপ্লেনেশন CNP" },
+      { id: "CALL RE-REGISTRATION", label: "কল রী-রেজিস্ট্রেশন   " },
       { id: "ONEWIEW", label: "ONEWIEW" },
       { id: "REMINDER GENERATION", label: "রিমাইন্ডার জেনারেশন" },
       { id: "VOC", label: "VOC" },
@@ -91,8 +91,8 @@ const dayTopics: Record<Language, Record<DayId, Topic[]>> = {
       { id: "REF", label: "REF" },
       { id: "WM", label: "WM" },
       { id: "TV", label: "TV" },
-      { id: "usages Extensive of Telepresence", label: "টেলিপ্রেজেন্সের বিস্তৃত ব্যবহার" },
-      { id: "Assistant Through RST", label: "RST মাধ্যমে সহকারী" },
+      { id: "usages Extensive of Telepresence", label: "উজেস এক্সটেন্সিভ অফ টেলিপ্রেজেন্স" },
+      { id: "Assistant Through RST", label: "অ্যাসিস্ট্যান্স থ্রু RST" },
     ],
   },
 
@@ -182,7 +182,7 @@ function DayPage() {
   const [isDayUnlocked, setIsDayUnlocked] = useState(false);
   const numericDayId = Number(dayId) as DayId;
   const topics = dayTopics[language]?.[numericDayId];
-  const currentUser = localStorage.getItem("username");
+  const currentUser = localStorage.getItem("email");
 
   useEffect(() => {
     if ((location.state as any)?.language) {
@@ -251,21 +251,23 @@ function DayPage() {
 
   /* ================= NAVIGATION ================= */
 
-  const goToVideo = (topicId: string) => {
-    navigate(`/video/${numericDayId}/${topicId}`);
-  };
+  /* ================= NAVIGATION ================= */
 
-  const goToAssessment = (topicId: string) => {
-  navigate(`/assesment/${numericDayId}/${topicId}`, {
+const goToVideo = (topicId: string) => {
+  navigate(`/video/${numericDayId}/${topicId}`);
+};
+
+const goToAssessment = (topicId: string) => {
+  navigate(`/assessment/${numericDayId}/${topicId}`, {
     state: {
-      totalTopics: topics.length,
+      totalTopics: topics?.length,
     },
   });
 };
 
-  const goToFinalAssessment = () => {
-    navigate(`/final-assesment/${numericDayId}`);
-  };
+const goToFinalAssessment = () => {
+  navigate(`/final-assessment/${numericDayId}`);
+};
 
   /* ================= UI ================= */
 

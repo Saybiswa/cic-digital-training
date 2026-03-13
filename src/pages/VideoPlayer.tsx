@@ -55,9 +55,9 @@ type VideoLibrary = {
 
     // Day 2 Topics
     "GSFS INTRODUCTION": {
-      english:"http://10.102.60.95/lgapptest/video/5GSFSIntroduction.mp4",
-      hindi:"http://10.102.60.95/lgapptest/video/5GSFSIntroduction.mp4",
-      bengali:"http://10.102.60.95/lgapptest/video/bn/GSFSIntroduction.mp4",
+      english:"http://10.102.60.95/lgapptest/video/5GSFSIntroductionc%20.mp4",
+      hindi:"http://10.102.60.95/lgapptest/video/5GSFSIntroductionc%20.mp4",
+      bengali:"http://10.102.60.95/lgapptest/video/5GSFSIntroductionc%20.mp4",
       gujarati:"http://10.102.60.95/lgapptest/video/gu/GSFSIntroduction.mp4",
       marathi:"http://10.102.60.95/lgapptest/video/mr/GSFSIntroduction.mp4",
       telugu:"http://10.102.60.95/lgapptest/video/te/GSFSIntroduction.mp4",
@@ -80,7 +80,7 @@ type VideoLibrary = {
     },
     "CALL RE-REGISTRATION": {
       english:"http://10.102.60.95/lgapptest/video/8CallRegistrationExistingCustomer.mp4",
-      hindi:"http://10.102.60.95/lgapptest/video/8CallReRegistration.mp4",
+      hindi:"http://10.102.60.95/lgapptest/video/8CallRegistrationExistingCustomer.mp4",
       bengali:"http://10.102.60.95/lgapptest/video/bn/CallReRegistration.mp4",
       gujarati:"http://10.102.60.95/lgapptest/video/gu/CallReRegistration.mp4",
       marathi:"http://10.102.60.95/lgapptest/video/mr/CallReRegistration.mp4",

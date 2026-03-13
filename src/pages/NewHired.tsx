@@ -20,7 +20,7 @@ const trainingDays: Record<Language, { day: string; video: string }[]> = {
   hindi: [
     { day: "दिन 1", video: "/videos/hindi/new-hired/day1.mp4" },
     { day: "दिन 2 GSFS", video: "/videos/hindi/new-hired/day2.mp4" },
-    { day: "दिन 3 उत्पाद अवलोकन", video: "/videos/hindi/new-hired/day3.mp4" },
+    { day: "दिन 3 प्रोडक्ट ओवरव्यू ", video: "/videos/hindi/new-hired/day3.mp4" },
   ],
   bengali: [
     { day: "দিন ১", video: "/videos/bengali/new-hired/day1.mp4" },

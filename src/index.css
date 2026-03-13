@@ -31,9 +31,9 @@ body {
 }
 
 .navbar-container {
-  max-width: 1500px;
-  margin: 0 auto;
-  padding: 0 10px;
+  width: 100%;
+  padding: 0 40px; 
+  
 
   display: flex;
   align-items: center;
@@ -155,7 +155,7 @@ body {
   max-width: 1600px;
   margin: 0 auto;
   padding: 0.2rem;
-  width: 300%;
+  width: 100%;
 }
 
 .home-container {
@@ -196,7 +196,7 @@ body {
 
 /* Text styling */
 .welcome-text {
-  max-width: 800px;
+  max-width: 1200px;
 }
 
 .welcome-text h2 {
@@ -556,23 +556,25 @@ body {
     font-size: 1.2rem;
   }
 }
-.assistance-container {
-  margin-top: 30px;
-  text-align: center;
-}
-
-.assistance-btn {
-  padding: 8px 10px;
-  font-size: 16px;
-  background-color: #ff4d4f;
+.floating-assistance-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  padding: 14px 22px;
+  background: linear-gradient(135deg, #af514c, #49403f);
   color: white;
+  font-weight: bold;
   border: none;
-  border-radius: 4px;
+  border-radius: 50px;
   cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  z-index: 1000;
 }
 
-.assistance-btn:hover {
-  background-color: #d9363e;
+.floating-assistance-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
 }
 .footer {
   background: linear-gradient(90deg, #7f1d1d, #b91c1c);

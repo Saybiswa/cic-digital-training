@@ -1,49 +1,71 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function AdminLogin() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+const AdminLogin = () => {
   const navigate = useNavigate();
+  const [username, setUsername] = useState(""); // admin login via username
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
     try {
-      const res = await fetch("http://127.0.0.1:5000/api/admin-login", {
+      setLoading(true);
+
+      const res = await fetch("http://localhost:5000/api/admin-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
+
       const data = await res.json();
 
-      if (data.success) {
-        localStorage.setItem("admin_logged_in", "true");
-        localStorage.setItem("username", username);
-        navigate("/admin-dashboard");
-      } else {
-        alert("Invalid credentials");
+      if (!res.ok) {
+        setError(data.message || "Invalid login");
+        return;
       }
+
+      // Save token & info (admins don’t get JWT in current backend, optional)
+      localStorage.setItem("username", username);
+      localStorage.setItem("role", "admin");
+
+      navigate("/admin-dashboard");
     } catch (err) {
       console.error(err);
-      alert("Server error");
+      setError("Server error. Try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div>
-      <input
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        placeholder="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={handleLogin}>Login</button>
+    <div style={{ textAlign: "center", marginTop: 100 }}>
+      <h2>Admin Login</h2>
+      <form onSubmit={handleLogin}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <br />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <br />
+        <button type="submit">{loading ? "Signing In..." : "Login"}</button>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+      </form>
     </div>
   );
-}
+};
 
 export default AdminLogin;
