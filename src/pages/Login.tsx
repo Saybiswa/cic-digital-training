@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import mainframelogo from "../assets/Mainframe-logo.png";
+import logo from "../assets/Mainframe-logo.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -62,7 +62,7 @@ const Login = () => {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        <img src={mainframelogo} alt="Logo" style={styles.logo} />
+        <img src={logo} alt="Logo" style={styles.logo} />
 
         <h2>LG CIC Training Portal</h2>
         <p style={styles.subtitle}>User Login</p>
