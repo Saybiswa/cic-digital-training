@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import mainframelogo from "../assets/Mainframe-logo.png";
+import mainframelogo from "@/assets/Mainframe-logo.png";
 
 const Login = () => {
   const navigate = useNavigate();
