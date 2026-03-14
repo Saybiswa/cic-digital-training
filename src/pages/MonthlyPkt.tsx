@@ -1,15 +1,19 @@
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import "./Assessment.css";
 
 interface Question {
+  id: number;
   question: string;
   options: string[];
-  answer: string;
+  correctAnswer: string;
 }
+
+/* ================= MONTHLY PKT QUESTIONS ================= */
 
 const monthlyPktQuestions: Question[] = [
   {
+    id: 1,
     question: "What is the purpose of Monthly PKT?",
     options: [
       "Improve product knowledge",
@@ -17,9 +21,10 @@ const monthlyPktQuestions: Question[] = [
       "Sales report",
       "Marketing plan",
     ],
-    answer: "Improve product knowledge",
+    correctAnswer: "Improve product knowledge",
   },
   {
+    id: 2,
     question: "PKT stands for?",
     options: [
       "Product Knowledge Training",
@@ -27,9 +32,10 @@ const monthlyPktQuestions: Question[] = [
       "Professional Knowledge Test",
       "Product Key Technology",
     ],
-    answer: "Product Knowledge Training",
+    correctAnswer: "Product Knowledge Training",
   },
   {
+    id: 3,
     question: "Monthly PKT helps agents to?",
     options: [
       "Handle customer queries better",
@@ -37,14 +43,16 @@ const monthlyPktQuestions: Question[] = [
       "Reduce working hours",
       "Skip training",
     ],
-    answer: "Handle customer queries better",
+    correctAnswer: "Handle customer queries better",
   },
   {
+    id: 4,
     question: "PKT sessions are conducted?",
     options: ["Monthly", "Daily", "Weekly", "Yearly"],
-    answer: "Monthly",
+    correctAnswer: "Monthly",
   },
   {
+    id: 5,
     question: "Which team benefits most from PKT?",
     options: [
       "Customer support team",
@@ -52,35 +60,69 @@ const monthlyPktQuestions: Question[] = [
       "HR team",
       "Security team",
     ],
-    answer: "Customer support team",
+    correctAnswer: "Customer support team",
   },
 ];
 
-function MonthlyPkt() {
+/* ================= COMPONENT ================= */
+
+const MonthlyPkt: React.FC = () => {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
-  const currentUser = localStorage.getItem("email");
+  const currentUser = localStorage.getItem("email") || "";
 
-  const [answers, setAnswers] = useState<string[]>(
-    Array(monthlyPktQuestions.length).fill("")
-  );
-
+  const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const [score, setScore] = useState<number | null>(null);
-  const [passed, setPassed] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [startTime, setStartTime] = useState<number>(0);
+
+  /* ================= LOGIN CHECK ================= */
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
+  /* ================= START TIMER ================= */
 
   useEffect(() => {
     setStartTime(Date.now());
   }, []);
 
-  const handleOptionChange = (qIndex: number, option: string) => {
-    const updated = [...answers];
-    updated[qIndex] = option;
-    setAnswers(updated);
+  /* ================= SELECT OPTION ================= */
+
+  const handleOptionChange = (questionId: number, option: string) => {
+    if (!submitted) {
+      setAnswers((prev) => ({
+        ...prev,
+        [questionId]: option,
+      }));
+    }
   };
 
-  const saveAssessment = async (percentage: number, duration: number) => {
+  /* ================= SUBMIT ASSESSMENT ================= */
+
+  const handleSubmit = async () => {
+    if (Object.keys(answers).length !== monthlyPktQuestions.length) {
+      alert("Please answer all questions.");
+      return;
+    }
+
+    const correctCount = monthlyPktQuestions.filter(
+      (q) => answers[q.id] === q.correctAnswer
+    ).length;
+
+    const calculatedScore = Math.round(
+      (correctCount / monthlyPktQuestions.length) * 100
+    );
+
+    setScore(calculatedScore);
+    setSubmitted(true);
+
+    const duration = Math.floor((Date.now() - startTime) / 1000);
+
     try {
       await fetch("http://localhost:5000/api/assessments", {
         method: "POST",
@@ -89,117 +131,78 @@ function MonthlyPkt() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          username: currentUser,
           day: 0,
           topic: "MONTHLY_PKT",
-          score: percentage,
+          score: calculatedScore,
           duration_seconds: duration,
         }),
       });
-
-      console.log("Monthly PKT saved");
     } catch (error) {
-      console.error("Save failed:", error);
+      console.error("Error saving Monthly PKT:", error);
+    }
+
+    /* ================= SAVE COMPLETION ================= */
+
+    if (calculatedScore >= 80) {
+      const key = `${currentUser}_monthly_pkt_completed`;
+      localStorage.setItem(key, "true");
     }
   };
 
-  const submitAssessment = async () => {
-    if (answers.includes("")) {
-      alert("Please answer all questions.");
-      return;
-    }
-
-    let correct = 0;
-
-    monthlyPktQuestions.forEach((q, index) => {
-      if (answers[index] === q.answer) correct++;
-    });
-
-    const percentage = Math.round(
-      (correct / monthlyPktQuestions.length) * 100
-    );
-
-    setScore(percentage);
-
-    const duration = Math.floor((Date.now() - startTime) / 1000);
-
-    await saveAssessment(percentage, duration);
-
-    if (percentage >= 80) {
-      setPassed(true);
-
-      localStorage.setItem(
-        `${currentUser}_monthly_pkt_completed`,
-        "true"
-      );
-
-      alert("Congratulations! You passed Monthly PKT!");
-    } else {
-      alert("You need 80% to pass.");
-    }
-  };
+  /* ================= UI ================= */
 
   return (
     <div className="assessment-container">
-      <h1>Monthly PKT</h1>
+      <h1>Monthly PKT Assessment</h1>
 
-      {monthlyPktQuestions.map((q, index) => (
-        <div key={index} className="question-box">
-          <h3>
-            {index + 1}. {q.question}
-          </h3>
+      {!submitted &&
+        monthlyPktQuestions.map((q) => (
+          <div key={q.id} className="question-box">
+            <h3>
+              {q.id}. {q.question}
+            </h3>
 
-          {q.options.map((option) => (
-            <label key={option} className="option-label">
-              <input
-                type="radio"
-                name={`question-${index}`}
-                checked={answers[index] === option}
-                onChange={() => handleOptionChange(index, option)}
-              />
-              {option}
-            </label>
-          ))}
-        </div>
-      ))}
+            {q.options.map((option) => (
+              <label key={option} className="option-label">
+                <input
+                  type="radio"
+                  name={`question-${q.id}`}
+                  value={option}
+                  checked={answers[q.id] === option}
+                  onChange={() => handleOptionChange(q.id, option)}
+                />
+                {option}
+              </label>
+            ))}
+          </div>
+        ))}
 
-      {score === null && (
-        <button className="submit-btn" onClick={submitAssessment}>
-          Submit
+      {!submitted && (
+        <button className="submit-btn" onClick={handleSubmit}>
+          Submit Assessment
         </button>
       )}
 
-      {score !== null && (
+      {submitted && score !== null && (
         <div className="result-box">
           <h2>Your Score: {score}%</h2>
 
-          {passed ? (
-            <>
-              <h3 style={{ color: "green" }}>Passed</h3>
-
-              <button
-                className="next-btn"
-                onClick={() => navigate("/")}
-              >
-                Go to Home
-              </button>
-            </>
+          {score >= 80 ? (
+            <h3 style={{ color: "green" }}>🎉 Passed!</h3>
           ) : (
-            <>
-              <h3 style={{ color: "red" }}>Failed</h3>
-
-              <button
-                className="retry-btn"
-                onClick={() => window.location.reload()}
-              >
-                Retry
-              </button>
-            </>
+            <h3 style={{ color: "red" }}>❌ Failed</h3>
           )}
+
+          <button
+            className="next-btn"
+            onClick={() => navigate("/home")}
+          >
+            Go to Home
+          </button>
         </div>
       )}
     </div>
   );
-}
+};
 
 export default MonthlyPkt;

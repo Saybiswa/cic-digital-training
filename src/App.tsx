@@ -155,16 +155,16 @@ function App() {
           }
         />
         <Route
-          path="/MonthlyPkt"
-          element={
-            <ProtectedRoute>
-              <>
-                <MonthlyPkt />
-                <Footer />
-              </>
-            </ProtectedRoute>
-          }
-        />
+  path="/monthly-pkt"
+  element={
+    <ProtectedRoute>
+      <>
+        <MonthlyPkt />
+        <Footer />
+      </>
+    </ProtectedRoute>
+  }
+/>
 
         {/* ================= ADMIN ROUTES ================= */}
 
